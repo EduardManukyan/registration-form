@@ -64,6 +64,7 @@ function EmailPassword({setData, setPageNumber}) {
         })
     }
 
+
     return (
         <>
             <FormHeader pageNumber={2} title={'Choose a package'} avatar={<EmailIcon/>}/>
@@ -105,6 +106,7 @@ function EmailPassword({setData, setPageNumber}) {
                 <div style={{display: 'block'}}>
                     <Checkbox type="checkbox"
                               name="standardPackage"
+
 
                     />
                     <label htmlFor="standardPackage">Standard Package</label>

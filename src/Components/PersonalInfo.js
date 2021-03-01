@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import * as Yup from "yup";
 import {useFormik} from "formik";
 import {
@@ -9,7 +9,7 @@ import {
     Grid,
     MenuItem,
     Select,
-    TextField
+    TextField,
 } from "@material-ui/core";
 import FormHeader from "./FormHeader";
 import '../assets/PersonalInfo.scss';
@@ -18,6 +18,8 @@ import {Avatar} from "@material-ui/core";
 
 
 const PersonalInfo = ({setData, setPageNumber}) => {
+    const [click, setClick] = useState(false);
+
     const formik = useFormik({
         initialValues: {
             firstName: '',
@@ -57,7 +59,7 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                 .required('Shipping Address Postal Code is required'),
         })
     });
-    const {errors, touched, submitForm, validateForm, values, handleChange} = formik;
+    const {errors, touched, submitForm, setFieldValue, validateForm, values, handleChange, setValues} = formik;
 
     function applyHandler() {
         submitForm().then(() => {
@@ -70,6 +72,19 @@ const PersonalInfo = ({setData, setPageNumber}) => {
             })
         })
     }
+
+    function handleClick({acceptTerms}) {
+        if (!acceptTerms) {
+            setValues({
+                    "shopping": values.country,
+                    "shippingCity": values.city,
+                    "shippingAddress": values.address,
+                    "shippingPostalCod": values.postalCod,
+                }
+            )
+        }
+    }
+
 
     return (
         <>
@@ -86,7 +101,10 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                                    error={touched.firstName && errors.firstName}
                                    helperText={touched.firstName && errors.firstName}
                                    id="firstName"
-                                   label="First Name"/>
+                                   label="First Name"
+                                   value={values.firstName}
+
+                        />
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <TextField name="lastName"
@@ -99,23 +117,21 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                                    helperText={touched.lastName && errors.lastName}
                                    id="lastName"
                                    label="Last Name"
-
+                                   value={values.lastName}
 
 
                         />
                     </Grid>
                 </Grid>
 
-                <FormControl error={touched.country && errors.country}>
+                <FormControl value={values.country} error={touched.country && errors.country}>
                     <Select labelId="label"
                             id="select"
                             name={'country'}
                             variant={"outlined"}
                             onChange={handleChange}
-                            value={values.country}
                             fullWidth
                             helperText={touched.country && errors.country}
-
                     >
                         <MenuItem value="Armenia">Armenia</MenuItem>
                         <MenuItem value="Russia">Russia</MenuItem>
@@ -130,7 +146,9 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                            error={touched.city && errors.city}
                            helperText={touched.city && errors.city}
                            id="city"
-                           label="City"/>
+                           label="City"
+                           value={values.city}
+                />
                 <TextField name="address"
                            variant="outlined"
                            margin="normal"
@@ -140,7 +158,9 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                            error={touched.address && errors.address}
                            helperText={touched.address && errors.address}
                            id="city"
-                           label="Address"/>
+                           label="Address"
+                           value={values.address}
+                />
                 <TextField name="postalCod"
                            variant="outlined"
                            margin="normal"
@@ -150,9 +170,12 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                            error={touched.postalCod && errors.postalCod}
                            helperText={touched.postalCod && errors.postalCod}
                            id="postalCod"
-                           label="Postal Cod"/>
+                           label="Postal Cod"
+                           value={values.postalCod}
+                />
                 <Checkbox type="checkbox"
                           name="acceptTerms"
+                          onChange={handleClick}
                 />
                 <label htmlFor="acceptTerms">Use filled data for shipping</label>
 
@@ -165,7 +188,9 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                            error={touched.shopping && errors.shopping}
                            helperText={touched.shopping && errors.shopping}
                            id="shopping"
-                           label="Shopping"/>
+                           label="Shopping"
+                           value={values.shopping}
+                />
                 <TextField name="shippingCity"
                            variant="outlined"
                            margin="normal"
@@ -175,7 +200,9 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                            error={touched.shippingCity && errors.shippingCity}
                            helperText={touched.shippingCity && errors.shippingCity}
                            id="shippingCity"
-                           label="Shipping City"/>
+                           label="Shipping City"
+                           value={values.shippingCity}
+                />
                 <TextField name="shippingAddress"
                            variant="outlined"
                            margin="normal"
@@ -185,7 +212,9 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                            error={touched.shippingAddress && errors.shippingAddress}
                            helperText={touched.shippingAddress && errors.shippingAddress}
                            id="shippingAddress"
-                           label="Shipping Address"/>
+                           label="Shipping Address"
+                           value={values.shippingAddress}
+                />
                 <TextField name="shippingPostalCod"
                            variant="outlined"
                            margin="normal"
@@ -195,7 +224,9 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                            error={touched.shippingPostalCod && errors.shippingPostalCod}
                            helperText={touched.shippingPostalCod && errors.shippingPostalCod}
                            id="shippingPostalCod"
-                           label="Shipping Postal Code"/>
+                           label="Shipping Postal Code"
+                           value={values.shippingPostalCod}
+                />
                 <Button variant="contained" color="primary" onClick={applyHandler}>Next</Button>
             </Container>
         </>

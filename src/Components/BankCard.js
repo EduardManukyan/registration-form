@@ -48,7 +48,7 @@ function BankCard({setData, setPageNumber}) {
 
         })
     })
-    const {errors, touched, submitForm, setFieldValue, validateForm, values, handleChange} = formik;
+    const {errors, touched, submitForm, setFieldValue, validateForm, values, handleChange,ha} = formik;
 
     function applyHandler() {
         submitForm().then(() => {
