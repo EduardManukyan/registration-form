@@ -6,7 +6,6 @@ import {
     Checkbox,
     Container,
     TextField,
-
 } from "@material-ui/core";
 import FormHeader from "./FormHeader";
 import '../assets/PersonalInfo.scss';
@@ -52,6 +51,7 @@ function EmailPassword({setData, setPageNumber}) {
             })
         })
     }
+
     function applyHandlerBack() {
         submitForm().then(() => {
             validateForm(values).then((formErrors) => {
@@ -104,6 +104,7 @@ function EmailPassword({setData, setPageNumber}) {
                            id="confirmPassword"
                            label="Confirm Password"/>
                 <div style={{display: 'block'}}>
+
                     <Checkbox type="checkbox"
                               name="standardPackage"
 
@@ -113,7 +114,7 @@ function EmailPassword({setData, setPageNumber}) {
                 </div>
                 <div>
                     <Checkbox type="checkbox"
-                           name="premiumPackage"
+                              name="premiumPackage"
 
 
                     />

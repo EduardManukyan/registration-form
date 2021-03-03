@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import * as Yup from "yup";
 import {useFormik} from "formik";
 import {
@@ -18,8 +18,7 @@ import {Avatar} from "@material-ui/core";
 
 
 const PersonalInfo = ({setData, setPageNumber}) => {
-    const [click, setClick] = useState(false);
-
+    const [disabled, setDisabled] = useState(false)
     const formik = useFormik({
         initialValues: {
             firstName: '',
@@ -59,13 +58,21 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                 .required('Shipping Address Postal Code is required'),
         })
     });
-    const {errors, touched, submitForm, setFieldValue, validateForm, values, handleChange, setValues} = formik;
+    const {
+        errors,
+        touched,
+        submitForm,
+        validateForm,
+        values,
+        handleChange,
+        setValues,
+    } = formik;
 
     function applyHandler() {
         submitForm().then(() => {
+
             validateForm(values).then((formErrors) => {
                 if (isEmpty(formErrors)) {
-
                     setPageNumber(2);
                     setData(values);
                 }
@@ -76,15 +83,22 @@ const PersonalInfo = ({setData, setPageNumber}) => {
     function handleClick({acceptTerms}) {
         if (!acceptTerms) {
             setValues({
+                ...values,
                     "shopping": values.country,
                     "shippingCity": values.city,
                     "shippingAddress": values.address,
                     "shippingPostalCod": values.postalCod,
-                }
+                    // 'acceptTerms': e.target.checked
+                },true
             )
+
         }
+
     }
 
+    function handleDisabledClick() {
+        setDisabled(!disabled)
+    }
 
     return (
         <>
@@ -175,7 +189,9 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                 />
                 <Checkbox type="checkbox"
                           name="acceptTerms"
+                          value={true}
                           onChange={handleClick}
+                          onClick={handleDisabledClick}
                 />
                 <label htmlFor="acceptTerms">Use filled data for shipping</label>
 
@@ -190,6 +206,9 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                            id="shopping"
                            label="Shopping"
                            value={values.shopping}
+                           // disabled={values.acceptTerms}
+                           disabled={disabled}
+
                 />
                 <TextField name="shippingCity"
                            variant="outlined"
@@ -202,6 +221,8 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                            id="shippingCity"
                            label="Shipping City"
                            value={values.shippingCity}
+                           disabled={disabled}
+
                 />
                 <TextField name="shippingAddress"
                            variant="outlined"
@@ -214,6 +235,8 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                            id="shippingAddress"
                            label="Shipping Address"
                            value={values.shippingAddress}
+                           disabled={disabled}
+
                 />
                 <TextField name="shippingPostalCod"
                            variant="outlined"
@@ -226,6 +249,7 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                            id="shippingPostalCod"
                            label="Shipping Postal Code"
                            value={values.shippingPostalCod}
+                           disabled={disabled}
                 />
                 <Button variant="contained" color="primary" onClick={applyHandler}>Next</Button>
             </Container>
