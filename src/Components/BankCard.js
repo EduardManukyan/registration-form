@@ -17,7 +17,7 @@ function BankCard({setData, setPageNumber}) {
     const formik = useFormik({
         initialValues: {
             cardNumber: '',
-            name: '',
+            fullName: '',
             expiry: '',
             cvc: ''
 
@@ -36,7 +36,7 @@ function BankCard({setData, setPageNumber}) {
                 .max(4)
                 .required(),
             nameOnCard: Yup.string()
-                .label('Name on card')
+                .label('Full name on card')
                 .max(100)
                 .required(),
             expiry: Yup.string()
@@ -48,7 +48,7 @@ function BankCard({setData, setPageNumber}) {
 
         })
     })
-    const {errors, touched, submitForm, setFieldValue, validateForm, values, handleChange,ha} = formik;
+    const {errors, touched, submitForm, setFieldValue, validateForm, values, handleChange, ha} = formik;
 
     function applyHandler() {
         submitForm().then(() => {
@@ -81,8 +81,14 @@ function BankCard({setData, setPageNumber}) {
     }
 
     function handleChangeCvc(e) {
-        if (e.target.value.length <= 4) {
-            setFieldValue('cvc',e.target.value)
+        if (Number(e.target.value) && e.target.value.length <= 4) {
+            setFieldValue('cvc', e.target.value)
+        }
+    }
+
+    function handleChangeFullName(e) {
+        if (e.target.value.length <= 100) {
+            setFieldValue('fullName', e.target.value)
         }
     }
 
@@ -105,16 +111,18 @@ function BankCard({setData, setPageNumber}) {
                     label="cardNumber"
                     name='cardNumber'
                 />
-                <TextField name="email"
+                <TextField name="fullName"
                            variant="outlined"
                            margin="normal"
-                           onChange={handleChange}
+                           onChange={handleChangeFullName}
                            required
                            fullWidth
-                           error={touched.name && errors.name}
-                           helperText={touched.name && errors.name}
-                           id="name"
-                           label="name"
+                           error={touched.fullName && errors.fullName}
+                           helperText={touched.fullName && errors.fullName}
+                           id="fullName"
+                           label="Full Name"
+                           value={values.fullName}
+
                 />
                 <TextField name="expiry"
                            variant="outlined"
