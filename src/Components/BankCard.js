@@ -7,7 +7,6 @@ import {
     TextField
 } from "@material-ui/core";
 import FormHeader from "./FormHeader";
-import '../assets/PersonalInfo.scss';
 import '../assets/BankCard.scss'
 import {isEmpty} from "lodash";
 import PaymentRoundedIcon from '@material-ui/icons/PaymentRounded';
@@ -18,37 +17,29 @@ function BankCard({setData, setPageNumber}) {
         initialValues: {
             cardNumber: '',
             fullName: '',
-            expiry: '',
+            cardExpirationDate: '',
             cvc: ''
-
         },
+
         onSubmit: () => {
         },
 
-
         validationSchema: Yup.object().shape({
             cardNumber: Yup.string()
-                .max(19)
-
-                .required("cardNumber"),
+                .max(19, "Card number mast be smaller then 19")
+                .required("Card number is required"),
             cvc: Yup.number()
-                .label('CVC')
-                .max(4)
-                .required(),
-            nameOnCard: Yup.string()
-                .label('Full name on card')
-                .max(100)
-                .required(),
-            expiry: Yup.string()
-                .label('Expiry month')
-                .min(2)
-                .max(2)
-                .required(),
-
-
+                .required("Card number cvc is required")
+                .max(9999, "CVC mast be smaller then 4"),
+            fullName: Yup.string()
+                .max(100, "Full name mast be smaller then 100")
+                .required("Full name is required"),
+            cardExpirationDate: Yup.string()
+                .required("Card expiration date is required"),
         })
     })
-    const {errors, touched, submitForm, setFieldValue, validateForm, values, handleChange, ha} = formik;
+
+    const {errors, touched, submitForm, setFieldValue, validateForm, values, setFieldTouched} = formik;
 
     function applyHandler() {
         submitForm().then(() => {
@@ -66,7 +57,6 @@ function BankCard({setData, setPageNumber}) {
         submitForm().then(() => {
             validateForm(values).then((formErrors) => {
                 if (isEmpty(formErrors)) {
-
                     setPageNumber(2);
                     setData(values);
                 }
@@ -76,20 +66,29 @@ function BankCard({setData, setPageNumber}) {
 
     function changeHandler(e) {
         if (e.target.value.length <= 19) {
-            setFieldValue('cardNumber', e.target.value.replace(/[^\dA-Z]/g, '').replace(/(.{4})/g, '$1 ').trim());
+            setFieldValue('cardNumber', e.target.value.replace(/[^\dA-Z]/g, '')
+                .replace(/(.{4})/g, '$1 ').trim());
         }
     }
 
     function handleChangeCvc(e) {
-        if (Number(e.target.value) && e.target.value.length <= 4) {
-            setFieldValue('cvc', e.target.value)
-        }
+        setFieldValue('cvc', e.target.value, true)
+            .then(() => {
+                setFieldTouched("cvc", true);
+            })
     }
 
     function handleChangeFullName(e) {
-        if (e.target.value.length <= 100) {
-            setFieldValue('fullName', e.target.value)
-        }
+        setFieldValue('fullName', e.target.value, true).then(() => {
+            setFieldTouched("fullName", true);
+        })
+    }
+
+    function handleChangeToData(e) {
+        setFieldValue('cardExpirationDate', e.target.value, true)
+            .then(() => {
+                setFieldTouched("cardExpirationDate", true);
+            })
     }
 
     return (
@@ -122,19 +121,7 @@ function BankCard({setData, setPageNumber}) {
                            id="fullName"
                            label="Full Name"
                            value={values.fullName}
-
                 />
-                <TextField name="expiry"
-                           variant="outlined"
-                           margin="normal"
-                           onChange={handleChange}
-                           required
-                           fullWidth
-                           error={touched.expiry && errors.expiry}
-                           helperText={touched.expiry && errors.expiry}
-                           id="expiry"
-                           label="expiry"/>
-
                 <TextField name="cvc"
                            variant="outlined"
                            margin="normal"
@@ -147,7 +134,19 @@ function BankCard({setData, setPageNumber}) {
                            id="cvc"
                            label="cvc"
                 />
-
+                <TextField name="CardExpirationDate"
+                           variant="outlined"
+                           margin="normal"
+                           type={"date"}
+                           onChange={handleChangeToData}
+                           required
+                           fullWidth
+                           error={touched.cardExpirationDate && errors.cardExpirationDate}
+                           helperText={touched.cardExpirationDate && errors.cardExpirationDate}
+                           id="cardExpirationDate"
+                           label="Card Expiration Date"
+                           value={values.cardExpirationDate}
+                />
                 <Button style={{right: '8px'}} variant="contained" color="primary"
                         onClick={applyHandlerBack}>Previous</Button>
                 <Button variant="contained" color="primary" onClick={applyHandler}>Next</Button>

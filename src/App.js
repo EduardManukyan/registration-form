@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import PersonalInfo from './Components/PersonalInfo';
 import EmailPassword from "./Components/EmailPassword";
 import BankCard from "./Components/BankCard"
+// import "index.scss"
 
 
 function App() {

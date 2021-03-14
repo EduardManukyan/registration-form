@@ -3,13 +3,10 @@ import ReactDOM from 'react-dom';
 import './index.scss';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import EmailPassword from "./Components/EmailPassword";
-import BankCard from "./Components/BankCard";
-
 
 ReactDOM.render(
   <React.StrictMode>
-    <BankCard />
+    <App />
   </React.StrictMode>,
   document.getElementById('root')
 );

@@ -1,14 +1,14 @@
 import React from 'react';
+import "../assets/EmailPassword.scss"
 import * as Yup from "yup";
 import {useFormik} from "formik";
 import {
     Button,
-    Checkbox,
     Container,
     TextField,
+    Radio,
 } from "@material-ui/core";
 import FormHeader from "./FormHeader";
-import '../assets/PersonalInfo.scss';
 import {isEmpty} from "lodash";
 import EmailIcon from '@material-ui/icons/Email';
 
@@ -18,8 +18,7 @@ function EmailPassword({setData, setPageNumber}) {
             email: '',
             password: '',
             confirmPassword: '',
-            standardPackage: false,
-            premiumPackage: false
+            checkRadio: '',
         },
         onSubmit: () => {
         },
@@ -33,18 +32,15 @@ function EmailPassword({setData, setPageNumber}) {
             confirmPassword: Yup.string()
                 .oneOf([Yup.ref('password'), null], 'Passwords must match')
                 .required('Confirm Password is required'),
-            // standardPackage: Yup.bool().oneOf([true], 'Standard Package is required').required('Confirm Password is required'),
-            // premiumPackage: Yup.bool().oneOf([true], 'Premium Package is required').required('Confirm Password is required'),
-
+            checkRadio: Yup.string().required('radio group is required'),
         })
     })
-    const {errors, touched, submitForm, validateForm, values, handleChange} = formik;
+    const {errors, touched, submitForm, validateForm, values, handleChange, setFieldValue} = formik;
 
     function applyHandler() {
         submitForm().then(() => {
             validateForm(values).then((formErrors) => {
                 if (isEmpty(formErrors)) {
-
                     setPageNumber(3);
                     setData(values);
                 }
@@ -56,7 +52,6 @@ function EmailPassword({setData, setPageNumber}) {
         submitForm().then(() => {
             validateForm(values).then((formErrors) => {
                 if (isEmpty(formErrors)) {
-
                     setPageNumber(1);
                     setData(values);
                 }
@@ -64,12 +59,14 @@ function EmailPassword({setData, setPageNumber}) {
         })
     }
 
+    function handleChangeRadio(e) {
+        setFieldValue('checkRadio', e.target.id);
+    }
 
     return (
         <>
             <FormHeader pageNumber={2} title={'Choose a package'} avatar={<EmailIcon/>}/>
             <Container className={'form-container'}>
-
                 <TextField name="email"
                            variant="outlined"
                            margin="normal"
@@ -80,7 +77,6 @@ function EmailPassword({setData, setPageNumber}) {
                            helperText={touched.email && errors.email}
                            id="email"
                            label="Email"/>
-
                 <TextField name="password"
                            type="password"
                            variant="outlined"
@@ -104,30 +100,29 @@ function EmailPassword({setData, setPageNumber}) {
                            id="confirmPassword"
                            label="Confirm Password"/>
                 <div style={{display: 'block'}}>
-
-                    <Checkbox type="checkbox"
-                              name="standardPackage"
-
-
+                    <Radio type="checkbox"
+                           id="standardPackage"
+                           checked={values.checkRadio === "standardPackage"}
+                           onChange={handleChangeRadio}
+                           className={(touched.checkRadio && errors.checkRadio) ? "radioStyle" : ""}
                     />
                     <label htmlFor="standardPackage">Standard Package</label>
                 </div>
                 <div>
-                    <Checkbox type="checkbox"
-                              name="premiumPackage"
-
-
+                    <Radio type="checkbox"
+                           id="premiumPackage"
+                           checked={values.checkRadio === "premiumPackage"}
+                           className={(touched.checkRadio && errors.checkRadio) ? "radioStyle" : ""}
+                           onClick={handleChangeRadio}
                     />
                     <label htmlFor="premiumPackage">Premium Package</label>
                 </div>
-
                 <Button style={{right: '8px'}} variant="contained" color="primary"
                         onClick={applyHandlerBack}>Previous</Button>
                 <Button variant="contained" color="primary" onClick={applyHandler}>Next</Button>
-
-
             </Container>
         </>
     );
-};
+}
+
 export default EmailPassword;

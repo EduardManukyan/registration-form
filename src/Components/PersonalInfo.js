@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import * as Yup from "yup";
 import {useFormik} from "formik";
 import {
@@ -18,7 +18,6 @@ import {Avatar} from "@material-ui/core";
 
 
 const PersonalInfo = ({setData, setPageNumber}) => {
-    const [disabled, setDisabled] = useState(false)
     const formik = useFormik({
         initialValues: {
             firstName: '',
@@ -65,12 +64,12 @@ const PersonalInfo = ({setData, setPageNumber}) => {
         validateForm,
         values,
         handleChange,
+        setFieldValue,
         setValues,
     } = formik;
 
     function applyHandler() {
         submitForm().then(() => {
-
             validateForm(values).then((formErrors) => {
                 if (isEmpty(formErrors)) {
                     setPageNumber(2);
@@ -80,24 +79,40 @@ const PersonalInfo = ({setData, setPageNumber}) => {
         })
     }
 
-    function handleClick({acceptTerms}) {
-        if (!acceptTerms) {
+    function handleClick(e) {
+        const {checked} = e.target;
+        if (checked) {
             setValues({
-                ...values,
+                    ...values,
                     "shopping": values.country,
                     "shippingCity": values.city,
                     "shippingAddress": values.address,
                     "shippingPostalCod": values.postalCod,
-                    // 'acceptTerms': e.target.checked
-                },true
+                    'acceptTerms': checked,
+                }, true
             )
 
+        } else {
+            setFieldValue('acceptTerms', checked);
         }
 
     }
 
-    function handleDisabledClick() {
-        setDisabled(!disabled)
+    function selectChangeHandler(first, second) {
+        return (e) => {
+            const {value} = e.target;
+            if (values.acceptTerms) {
+                setValues({
+                        ...values,
+                        [second]: value,
+                        [first]: value,
+                    }, true
+                )
+            } else {
+                setFieldValue(first, value, true);
+            }
+        }
+
     }
 
     return (
@@ -117,7 +132,6 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                                    id="firstName"
                                    label="First Name"
                                    value={values.firstName}
-
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -132,18 +146,15 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                                    id="lastName"
                                    label="Last Name"
                                    value={values.lastName}
-
-
                         />
                     </Grid>
                 </Grid>
-
                 <FormControl value={values.country} error={touched.country && errors.country}>
                     <Select labelId="label"
                             id="select"
                             name={'country'}
                             variant={"outlined"}
-                            onChange={handleChange}
+                            onChange={selectChangeHandler('country', 'shopping')}
                             fullWidth
                             helperText={touched.country && errors.country}
                     >
@@ -154,7 +165,7 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                 <TextField name="city"
                            variant="outlined"
                            margin="normal"
-                           onChange={handleChange}
+                           onChange={selectChangeHandler('city', 'shippingCity')}
                            required
                            fullWidth
                            error={touched.city && errors.city}
@@ -166,7 +177,7 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                 <TextField name="address"
                            variant="outlined"
                            margin="normal"
-                           onChange={handleChange}
+                           onChange={selectChangeHandler('address', 'shippingAddress')}
                            required
                            fullWidth
                            error={touched.address && errors.address}
@@ -178,7 +189,7 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                 <TextField name="postalCod"
                            variant="outlined"
                            margin="normal"
-                           onChange={handleChange}
+                           onChange={selectChangeHandler('postalCod', 'shippingPostalCod')}
                            required
                            fullWidth
                            error={touched.postalCod && errors.postalCod}
@@ -188,13 +199,10 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                            value={values.postalCod}
                 />
                 <Checkbox type="checkbox"
-                          name="acceptTerms"
-                          value={true}
+                          checked={values.acceptTerms}
                           onChange={handleClick}
-                          onClick={handleDisabledClick}
                 />
                 <label htmlFor="acceptTerms">Use filled data for shipping</label>
-
                 <TextField name="shopping"
                            variant="outlined"
                            margin="normal"
@@ -206,9 +214,7 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                            id="shopping"
                            label="Shopping"
                            value={values.shopping}
-                           // disabled={values.acceptTerms}
-                           disabled={disabled}
-
+                           disabled={values.acceptTerms}
                 />
                 <TextField name="shippingCity"
                            variant="outlined"
@@ -221,8 +227,7 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                            id="shippingCity"
                            label="Shipping City"
                            value={values.shippingCity}
-                           disabled={disabled}
-
+                           disabled={values.acceptTerms}
                 />
                 <TextField name="shippingAddress"
                            variant="outlined"
@@ -235,8 +240,7 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                            id="shippingAddress"
                            label="Shipping Address"
                            value={values.shippingAddress}
-                           disabled={disabled}
-
+                           disabled={values.acceptTerms}
                 />
                 <TextField name="shippingPostalCod"
                            variant="outlined"
@@ -249,7 +253,7 @@ const PersonalInfo = ({setData, setPageNumber}) => {
                            id="shippingPostalCod"
                            label="Shipping Postal Code"
                            value={values.shippingPostalCod}
-                           disabled={disabled}
+                           disabled={values.acceptTerms}
                 />
                 <Button variant="contained" color="primary" onClick={applyHandler}>Next</Button>
             </Container>
